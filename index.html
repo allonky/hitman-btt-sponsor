@@ -79,7 +79,8 @@
   .add{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);background:transparent;border:1px solid var(--amber);min-height:44px;padding:11px 9px;cursor:pointer;line-height:1.5}
   .add:hover,.add.in{background:var(--amber);color:var(--bg)}
   .add:disabled{opacity:.5;cursor:default}
-  .price.levels{grid-column:2/4;text-align:right;margin-top:16px}
+  .row.wide{grid-template-columns:28px minmax(0,1fr) 340px}
+  .price.levels{text-align:right;padding-top:1px}
   .price.levels>span{margin:0 0 10px}
   .lvl{display:flex;justify-content:flex-end;align-items:center;gap:16px;margin-top:8px}
   .lvl b{font-family:var(--wm);font-weight:400;font-size:30px;line-height:1;color:var(--amber);letter-spacing:.01em}
@@ -177,6 +178,8 @@
     .call .ask{font-size:64px}
     .boxes{font-size:21px;gap:12px}
     .row{grid-template-columns:23px minmax(0,1fr) 150px;gap:0 15px}
+    .row.wide{grid-template-columns:23px minmax(0,1fr) 300px}
+    .lvl .add{width:150px}
     .what h3 span{font-size:24px}
     .price b{font-size:30px}
     .pitch{gap:24px}
@@ -216,7 +219,8 @@
     .price .range{font-size:30px}
     .price .range small{display:inline;margin:0 6px}
     .buy{max-width:300px;gap:8px;margin-top:14px}
-    .price.levels{margin-top:16px;padding-top:14px}
+    .row.wide{grid-template-columns:22px minmax(0,1fr)}
+    .price.levels{grid-column:2;margin-top:20px;padding-top:16px}
     .lvl{justify-content:space-between}
     .lvl .add{width:150px}
     .add{font-size:11px}
@@ -344,7 +348,8 @@
     .buy,.cart,.lvl .add{display:none!important}
     .lvl{justify-content:flex-end;margin-top:4px}
     .lvl b{font-size:22px}
-    .price.levels{margin-top:10px}
+    .row.wide{grid-template-columns:23px minmax(0,1fr) 200px}
+    .price.levels{margin-top:0}
     .keep,.term-group>div,.fine p{break-inside:avoid;page-break-inside:avoid}
     h2,h3,.what h3{break-after:avoid;page-break-after:avoid}
     p{orphans:3;widows:3}
@@ -551,7 +556,7 @@
       <p class="section-note">3 tiers.</p>
     </div>
     <div class="ledger">
-      <div class="row">
+      <div class="row wide">
         <div class="n">11</div>
         <div class="what">
           <div class="keep">
