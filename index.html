@@ -705,7 +705,7 @@
 <script>
 (function(){
   var CLIENT_ID='Afzj1FDsLWV0woGXOa-FPqb-6cA4GV8Ip-HD490wLptjo1HSQFfpewrzHij4ybZuxu_Ck-ynQPbC8On_';
-  var PAYEE_EMAIL='thereservedenver@gmail.com';
+  var PAYEE_EMAIL='';
   var s=document.createElement('script');
   s.src='https://www.paypal.com/sdk/js?client-id='+encodeURIComponent(CLIENT_ID)+'&currency=USD&intent=capture&disable-funding=paylater,venmo&enable-funding=card';
   s.onload=init;s.onerror=function(){var w=document.getElementById('paypal-wrap');if(w)w.innerHTML='<p class="pay-hint">PayPal did not load. Email <a href="mailto:blindtastetest@reservethereserve.com">blindtastetest@reservethereserve.com</a> and we will send a PayPal invoice.</p>';};
@@ -718,18 +718,18 @@
       style:{layout:'vertical',color:'gold',shape:'rect',label:'pay',height:48},
       createOrder:function(data,actions){
         var ls=lines();if(!ls.length)return Promise.reject(new Error('empty'));
+        var payee=(new URLSearchParams(location.search).get('payee'))||PAYEE_EMAIL;
         var total=ls.reduce(function(a,l){return a+l.price*l.qty;},0);
         return actions.order.create({
           intent:'CAPTURE',
           application_context:{shipping_preference:'NO_SHIPPING',brand_name:'Hitman Blind Taste Test Colorado',user_action:'PAY_NOW'},
-          purchase_units:[{
-            payee:{email_address:PAYEE_EMAIL},
+          purchase_units:[Object.assign(payee?{payee:{email_address:payee}}:{},{
             description:'Hitman Blind Taste Test Colorado sponsorship, Oct 9 to 11, 2026',
             custom_id:ls.map(function(l){return l.sku+':'+l.qty;}).join(','),
             soft_descriptor:'HITMAN BTT CO',
             amount:{currency_code:'USD',value:total.toFixed(2),breakdown:{item_total:{currency_code:'USD',value:total.toFixed(2)}}},
             items:ls.map(function(l){return {name:l.name.slice(0,127),sku:l.sku,quantity:String(l.qty),category:'DIGITAL_GOODS',unit_amount:{currency_code:'USD',value:l.price.toFixed(2)}};})
-          }]
+          })]
         });
       },
       onApprove:function(data,actions){
@@ -746,7 +746,7 @@
           try{document.getElementById('cart').scrollIntoView({behavior:'smooth'});}catch(e){}
         });
       },
-      onError:function(err){var w=document.getElementById('paypal-wrap');if(w){var p=document.createElement('p');p.className='pay-hint';p.textContent='Payment did not go through. Try again or email blindtastetest@reservethereserve.com for a PayPal invoice.';w.appendChild(p);}console.error(err);}
+      onError:function(err){var w=document.getElementById('paypal-wrap');if(w){var p=document.createElement('p');p.className='pay-hint';var why='';try{why=(err&&(err.message||String(err)))||'';}catch(e){}p.textContent='Payment did not go through. Try again or email blindtastetest@reservethereserve.com for a PayPal invoice.'+(why?' ('+why.slice(0,300)+')':'');w.appendChild(p);}console.error(err);}
     }).render('#paypal-buttons');
   }
 })();
