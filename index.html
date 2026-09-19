@@ -149,6 +149,11 @@
   .paid b{display:block;font-family:var(--wm);font-weight:400;font-size:26px;letter-spacing:.02em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
   .paid p{margin:0 0 8px}
   .paid a{color:var(--ink)}
+  .row.sold .what h3 span,.row.sold .price>b{text-decoration:line-through;text-decoration-thickness:3px;text-decoration-color:var(--amber);opacity:.45}
+  .row.sold .what p,.row.sold .what h3 em,.row.sold .n,.row.sold .price>span{opacity:.45}
+  .soldout{display:inline-block;margin-top:12px;border:2px solid var(--amber);color:var(--amber);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:8px 12px;line-height:1.3}
+  .left{display:block;margin-top:8px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber)}
+  @media (max-width:600px){.soldout{margin-top:8px}}
   .print-only{display:none}
   @page{size:letter portrait;margin:.5in}
   @media (max-width:800px){
@@ -671,8 +676,9 @@
     try{var raw=localStorage.getItem(KEY);if(raw){var saved=JSON.parse(raw);Object.keys(saved).forEach(function(sku){if(catalog[sku])items[sku]=saved[sku];});}}catch(e){}
   }
   function save(){try{localStorage.setItem(KEY,JSON.stringify(items));}catch(e){}}
-  function add(sku){var c=catalog[sku];if(!c)return;var it=items[sku]||{name:c.name,price:c.price,max:c.max,qty:0};if(it.qty<c.max)it.qty++;items[sku]=it;save();render();}
-  function setQty(sku,q){if(!items[sku])return;q=Math.max(0,Math.min(q,items[sku].max));if(q===0)delete items[sku];else items[sku].qty=q;save();render();}
+  function cap(sku){var c=catalog[sku];if(!c)return 0;if(window.HBTTSold){var r=window.HBTTSold.remaining(sku);if(r)return Math.min(c.max,r.left);}return c.max;}
+  function add(sku){var c=catalog[sku];if(!c)return;var it=items[sku]||{name:c.name,price:c.price,max:c.max,qty:0};if(it.qty<cap(sku))it.qty++;if(!it.qty)return;items[sku]=it;save();render();}
+  function setQty(sku,q){if(!items[sku])return;q=Math.max(0,Math.min(q,cap(sku)));if(q===0)delete items[sku];else items[sku].qty=q;save();render();}
   function render(){
     var lines=document.getElementById('cart-lines'),total=0,count=0,html='';
     Object.keys(items).forEach(function(sku){var it=items[sku];total+=it.price*it.qty;count+=it.qty;
@@ -684,14 +690,14 @@
     document.getElementById('cart-count').textContent=count?count+(count===1?' item':' items'):'empty';
     var pw=document.getElementById('paypal-wrap'),pe=document.getElementById('pay-empty');if(pw){pw.hidden=!count;pe.hidden=!!count;}
     if(window.HBTTCart)window.HBTTCart.changed.forEach(function(f){f(items,total);});
-    document.querySelectorAll('.add').forEach(function(b){var it=items[b.dataset.sku];b.classList.toggle('in',!!it);b.disabled=!!(it&&it.qty>=it.max);b.textContent=it?(it.max>1?'In cart × '+it.qty+' · add another':'In cart'):b.dataset.label;});
+    document.querySelectorAll('.add').forEach(function(b){var it=items[b.dataset.sku];b.classList.toggle('in',!!it);b.disabled=!!(it&&it.qty>=cap(b.dataset.sku));b.textContent=it?(it.max>1?'In cart × '+it.qty+' · add another':'In cart'):b.dataset.label;});
   }
   document.querySelectorAll('.add').forEach(function(b){b.dataset.label=b.textContent;b.addEventListener('click',function(){add(b.dataset.sku);});});
   document.getElementById('cart-lines').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;
     if(t.dataset.inc)setQty(t.dataset.inc,items[t.dataset.inc].qty+1);
     else if(t.dataset.dec)setQty(t.dataset.dec,items[t.dataset.dec].qty-1);
     else if(t.dataset.rm)setQty(t.dataset.rm,0);});
-  window.HBTTCart={items:function(){return items;},clear:function(){items={};save();render();},paid:function(html){document.getElementById('cart-lines').innerHTML=html;},changed:[]};
+  window.HBTTCart={items:function(){return items;},clear:function(){items={};save();render();},paid:function(html){document.getElementById('cart-lines').innerHTML=html;},prune:function(f){var ch=false;Object.keys(items).forEach(function(k){var q=f(k,items[k].qty);if(q!==items[k].qty){ch=true;if(q<=0)delete items[k];else items[k].qty=q;}});if(ch){save();render();}},changed:[]};
   load();render();
 })();
 </script>
@@ -731,6 +737,7 @@
           var cap=d.purchase_units&&d.purchase_units[0].payments&&d.purchase_units[0].payments.captures&&d.purchase_units[0].payments.captures[0];
           var id=(cap&&cap.id)||d.id;
           var html='<div class="paid"><b>Paid. You are in.</b><p>'+ls.map(function(l){return l.name+(l.qty>1?' × '+l.qty:'');}).join(' · ')+'</p><p>'+money(total)+' · PayPal transaction '+id+' · receipt sent to '+payer+'</p><p>Next: reply to the receipt or email <a href="mailto:blindtastetest@reservethereserve.com?subject=Sponsor%20'+encodeURIComponent(id)+'">blindtastetest@reservethereserve.com</a> with your logo, the flagship product you are putting in the vault and the names on your passes. Artwork deadline Oct 2.</p></div>';
+          if(window.HBTTSold){var mk={};ls.forEach(function(l){mk[l.sku]=l.qty;});window.HBTTSold.mark(mk);}
           window.HBTTCart.clear();window.HBTTCart.paid(html);
           var w=document.getElementById('paypal-wrap'),pe=document.getElementById('pay-empty');if(w)w.hidden=true;if(pe)pe.hidden=true;
           document.getElementById('cart-count').textContent='paid';
@@ -740,5 +747,48 @@
       onError:function(err){var w=document.getElementById('paypal-wrap');if(w){var p=document.createElement('p');p.className='pay-hint';p.textContent='Payment did not go through. Try again or email blindtastetest@reservethereserve.com for a PayPal invoice.';w.appendChild(p);}console.error(err);}
     }).render('#paypal-buttons');
   }
+})();
+</script>
+
+<script>
+(function(){
+  var API='https://hitman-btt-inventory.vercel.app/api/sold';
+  var POOLS={VENDOR:{skus:['HBTT-SP-VENDOR-1D','HBTT-SP-VENDOR-2D'],max:6},STATION:{skus:['HBTT-SP-STATION-1D','HBTT-SP-STATION-2D'],max:10},PRESENT:{skus:['HBTT-SP-PRESENT-10','HBTT-SP-PRESENT-20','HBTT-SP-PRESENT-30'],max:3}};
+  var FIVE=['HBTT-SP-SHIRT','HBTT-SP-HOODIE','HBTT-SP-WRISTBAND','HBTT-SP-BLINDFOLD','HBTT-SP-SCORECARD'];
+  var sold={};
+  function merge(o){Object.keys(o||{}).forEach(function(k){sold[k]=Math.max(sold[k]||0,+o[k]||0);});}
+  function poolOf(sku){var out=null;Object.keys(POOLS).forEach(function(p){if(POOLS[p].skus.indexOf(sku)>-1)out=POOLS[p];});return out;}
+  function remaining(sku){
+    var b=document.querySelector('.add[data-sku="'+sku+'"]');if(!b)return null;
+    var max=+b.dataset.max,used=0,pool=poolOf(sku);
+    if(pool){max=pool.max;pool.skus.forEach(function(s){used+=sold[s]||0;});}else used=sold[sku]||0;
+    if(sku==='HBTT-SP-MERCH'&&FIVE.some(function(s){return (sold[s]||0)>0;}))used=max;
+    if(FIVE.indexOf(sku)>-1&&(sold['HBTT-SP-MERCH']||0)>0)used=max;
+    return {left:Math.max(0,max-used),max:max};
+  }
+  function apply(){
+    document.querySelectorAll('.row').forEach(function(row){
+      var btns=row.querySelectorAll('.add');if(!btns.length)return;
+      var allOut=true,info=null;
+      btns.forEach(function(b){var r=remaining(b.dataset.sku);if(!r)return;info=r;if(r.left>0)allOut=false;});
+      row.classList.toggle('sold',allOut);
+      var price=row.querySelector('.price'),buy=price.querySelector('.buy'),tag=price.querySelector('.soldout'),left=price.querySelector('.left');
+      if(allOut){
+        if(!tag){tag=document.createElement('span');tag.className='soldout';tag.textContent='Sold out';price.insertBefore(tag,buy);}
+        if(left)left.remove();buy.hidden=true;
+      }else{
+        if(tag)tag.remove();buy.hidden=false;
+        if(info&&info.max>1&&info.left<info.max){if(!left){left=document.createElement('span');left.className='left';price.insertBefore(left,buy);}left.textContent=info.left+' of '+info.max+' left';}
+        else if(left)left.remove();
+      }
+    });
+    if(window.HBTTCart)window.HBTTCart.prune(function(sku,qty){var r=remaining(sku);return r?Math.min(qty,r.left):qty;});
+  }
+  function pull(){
+    fetch('sold.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){merge(j.sold||j);apply();}).catch(function(){});
+    fetch(API+'?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){merge(j.sold||{});apply();}).catch(function(){});
+  }
+  window.HBTTSold={remaining:remaining,mark:function(skus){Object.keys(skus).forEach(function(k){sold[k]=(sold[k]||0)+(+skus[k]||0);});apply();},state:function(){return sold;}};
+  apply();pull();setInterval(pull,90000);
 })();
 </script>
