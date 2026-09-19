@@ -40,14 +40,14 @@
 
   .call-art{width:100%;height:auto;display:block}
   .cover-bottom{border-top:1px solid var(--rule);padding-top:24px}
-  .ballot{margin-top:34px;border:3px solid var(--amber);padding:22px 26px;display:flex;align-items:center;gap:34px;flex-wrap:wrap}
+  .ballot{margin-top:0;border:3px solid var(--amber);padding:22px 26px;display:flex;align-items:center;gap:34px;flex-wrap:wrap}
   .ballot .opt{display:inline-flex;align-items:center;gap:14px;font-family:var(--wm);font-size:40px;letter-spacing:.04em;text-transform:uppercase;line-height:1;color:var(--ink)}
   .ballot .box{width:34px;height:34px;border:4px solid var(--amber);display:inline-block;flex:none}
   .ballot .tag{margin-left:auto;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);font-weight:600;max-width:24ch;text-align:right;line-height:1.6}
   .phone{margin-top:26px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
   .phone b{display:block;font-family:var(--wm);font-weight:400;font-size:20px;letter-spacing:.03em;text-transform:uppercase;color:var(--amber);line-height:1.15}
   .phone p{margin:8px 0 0;font-size:12px;line-height:1.7;color:var(--body)}
-  .pitch{display:grid;grid-template-columns:1fr 1.35fr;gap:40px;align-items:start}
+  .pitch{margin-top:34px;padding-top:28px;border-top:1px solid var(--rule);display:grid;grid-template-columns:1fr 1.35fr;gap:40px;align-items:start}
   .pitch h2{margin:0;font-family:var(--wm);font-weight:400;font-size:32px;line-height:1.12;text-transform:uppercase;letter-spacing:.025em}
   .intro{margin:0;color:var(--body);font-size:12px;line-height:1.75;max-width:62ch}
   .meta{margin-top:30px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
@@ -264,7 +264,7 @@
     .call .sub{font-size:10px;line-height:1.7;margin-top:24px;max-width:34ch}
     .call-pic{width:auto;max-width:none;justify-self:stretch}
     .cover-bottom{padding-top:18px}
-    .ballot{margin-top:20px;padding:14px 18px;gap:22px}
+    .ballot{margin-top:0;padding:14px 18px;gap:22px}
     .ballot .opt{font-size:28px}
     .ballot .box{width:24px;height:24px;border-width:3px}
     .ballot .tag{font-size:9px}
@@ -273,7 +273,7 @@
     .phone p{font-size:9px;line-height:1.65}
     .call{padding:22px 0}
     .call .ask{font-size:56px}
-    .pitch{grid-template-columns:1fr 1.35fr;gap:28px}
+    .pitch{margin-top:18px;padding-top:16px;grid-template-columns:1fr 1.35fr;gap:28px}
     .pitch h2{font-size:27px}
     .intro{font-size:10px;line-height:1.7}
     .meta{grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px}
@@ -360,16 +360,6 @@
     </div>
 
     <div class="cover-bottom">
-      <div class="pitch">
-        <h2>Put your name<br>in the room.</h2>
-        <p class="intro">200 people pay $200 each to test in a four floor loft in downtown Denver on Oct 10 and 11. They call live resin or live rosin on their phone. Pass and take the sponsor-built Prize Vault.</p>
-      </div>
-      <div class="meta">
-        <span><b>200</b>judges · 100 a day</span>
-        <span><b>10</b>branded stations</span>
-        <span><b>20 to 30</b>entries</span>
-        <span><b>150</b>cap in the building</span>
-      </div>
       <div class="ballot" aria-label="The call every judge makes">
         <span class="opt"><i class="box" aria-hidden="true"></i>Live resin</span>
         <span class="opt"><i class="box" aria-hidden="true"></i>Live rosin</span>
@@ -379,6 +369,16 @@
         <div><b>The ticket is the phone</b><p>A QR code in the confirmation email. Nothing printed, nothing mailed. Scan at the door, wristband, walk in. The sponsor's logo sits on that ticket.</p></div>
         <div><b>The scorecard is an app</b><p>A judge code on the ticket unlocks a 20 entry card we built for this. Flavor 1 to 10, resin or rosin, notes. Every tap saves live. iPad stations on every floor for anyone who wants a bigger screen.</p></div>
         <div><b>Results the second you submit</b><p>Right calls out of 20 on the screen and in the inbox, on a card judges screenshot and post. The tally, the passers and the awards come off the same system that night.</p></div>
+      </div>
+      <div class="pitch">
+        <h2>Put your name<br>in the room.</h2>
+        <p class="intro">200 people pay $200 each to test in a four floor loft in downtown Denver on Oct 10 and 11. They call live resin or live rosin on their phone. Pass and take the sponsor-built Prize Vault.</p>
+      </div>
+      <div class="meta">
+        <span><b>200</b>judges · 100 a day</span>
+        <span><b>10</b>branded stations</span>
+        <span><b>20 to 30</b>entries</span>
+        <span><b>150</b>cap in the building</span>
       </div>
     </div>
   </header>
