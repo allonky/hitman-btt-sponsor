@@ -148,6 +148,8 @@
   .pay-hint{margin:10px 0 0;font-size:11px;line-height:1.6;color:var(--muted)}
   .paypal-wrap .pay-hint{color:#5a5040}
   .paypal-wrap .pay-hint a{color:#1c1712}
+  .paypal-wrap.idle #paypal-buttons{opacity:.55}
+  .pay-nudge{color:#b93c17!important;font-weight:600}
   .pay-empty{margin:16px 0 0;font-size:11px;line-height:1.6;color:var(--muted);border:1px dashed var(--rule);padding:12px 14px}
   .paid{border:2px solid var(--amber);padding:18px 20px;font-size:12px;line-height:1.7;color:var(--body)}
   .paid b{display:block;font-family:var(--wm);font-weight:400;font-size:26px;letter-spacing:.02em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
@@ -439,7 +441,7 @@
   <section class="sheet" aria-labelledby="merch-title">
     <div class="section-head">
       <div><p class="eyebrow">On every judge</p><h2 id="merch-title">Merch</h2></div>
-      <p class="section-note">5 pieces.<br>Buy one or take all five as Merch sponsor.</p>
+      <p class="section-note">5 pieces.<br>Buy one or take all five as Exclusive merch sponsor.</p>
     </div>
     <div class="ledger">
       <div class="row">
@@ -514,13 +516,13 @@
         <div class="n">10</div>
         <div class="what">
           <div class="keep">
-            <h3><span>Merch sponsor</span><em>1 slot · all five merch placements</em></h3>
+            <h3><span>Exclusive merch sponsor</span><em>1 slot · all five merch placements</em></h3>
             <p>Everything a judge wears, touches or looks at carries one name: the shirt, the hoodie, the wristband, the blindfold and the scorecard. Bought separately the five run $35,000. Take all five and nobody else gets a piece of merch in the building.</p>
           </div>
           <p class="inc">8 passes, 8 credentials · VIP preparty · reveal posts for every piece · vault product</p>
           <p class="inc">If any one of the five sells first, the bundle is gone.</p>
         </div>
-        <div class="price"><b>$25,000</b><span>All five. One brand.</span><div class="buy"><button type="button" class="add" data-sku="HBTT-SP-MERCH" data-name="Merch sponsor, all five" data-price="25000" data-max="1">Add to cart</button></div></div>
+        <div class="price"><b>$25,000</b><span>All five. One brand.</span><div class="buy"><button type="button" class="add" data-sku="HBTT-SP-MERCH" data-name="Exclusive merch sponsor, all five" data-price="25000" data-max="1">Add to cart</button></div></div>
       </div>
     </div>
   </section>
@@ -641,7 +643,7 @@
       <div class="cols">
         <div class="term-group">
           <p class="payment keep"><b>Paid in full.</b> Every placement is paid in full at checkout. No deposits. No promises. Single slot placements go to whoever pays first. Tasting stations get placed in payment order. We assign vendor tables. You do not choose.</p>
-          <p class="keep"><b>Merch sponsor.</b> Takes all five merch placements off the board. If any one sells first, the bundle is gone.</p>
+          <p class="keep"><b>Exclusive merch sponsor.</b> Takes all five merch placements off the board. If any one sells first, the bundle is gone.</p>
           <p class="keep"><b>Passes and credentials.</b> Judge passes are seats at the test, not comps to hang out. Dispensaries put their budtenders in them. Credentials are wristbands for your people working the room.</p>
           <p class="keep"><b>Presenting levels.</b> $10,000, $20,000 or $30,000. Pick your level at checkout. We scope the package to it.</p>
         </div>
@@ -668,8 +670,8 @@
       <div class="cart-lines" id="cart-lines"><p class="empty">Nothing in it yet. Add placements above, then check out. Everything is paid in full at checkout through PayPal.</p></div>
       <div class="cart-foot">
         <div class="total"><span>Total</span><b id="cart-total" aria-live="polite">$0</b></div>
-        <div class="paypal-wrap" id="paypal-wrap" hidden><div id="paypal-buttons"></div><p class="pay-hint">Pay with PayPal or any card. No PayPal account needed. Paid in full, no deposits.</p></div>
-        <p class="pay-empty" id="pay-empty">Add a placement above and the payment buttons appear here.</p>
+        <div class="paypal-wrap" id="paypal-wrap"><div id="paypal-buttons"></div><p class="pay-hint">Pay with PayPal or any card. No PayPal account needed. Paid in full, no deposits.</p></div>
+        <p class="pay-empty" id="pay-empty" hidden></p>
       </div>
       <p class="cart-note">Vault product, artwork and passes get sorted by email after you pay. Questions before you do: <a href="mailto:blindtastetest@reservethereserve.com">blindtastetest@reservethereserve.com</a></p>
     </section>
@@ -706,7 +708,7 @@
     lines.innerHTML=html||'<p class="empty">Nothing in it yet. Add placements above, then check out. Everything is paid in full at checkout through PayPal.</p>';
     document.getElementById('cart-total').textContent=money(total);
     document.getElementById('cart-count').textContent=count?count+(count===1?' item':' items'):'empty';
-    var pw=document.getElementById('paypal-wrap'),pe=document.getElementById('pay-empty');if(pw){pw.hidden=!count;pe.hidden=!!count;}
+    var pw=document.getElementById('paypal-wrap');if(pw){pw.classList.toggle('idle',!count);}
     if(window.HBTTCart)window.HBTTCart.changed.forEach(function(f){f(items,total);});
     document.querySelectorAll('.add').forEach(function(b){var it=items[b.dataset.sku];b.classList.toggle('in',!!it);b.disabled=!!(it&&it.qty>=cap(b.dataset.sku));b.textContent=it?(it.max>1?'In cart × '+it.qty+' · add another':'In cart'):b.dataset.label;});
   }
@@ -734,6 +736,7 @@
     if(!window.paypal||!window.HBTTCart)return;
     paypal.Buttons({
       style:{layout:'vertical',color:'gold',shape:'rect',label:'pay',height:48,tagline:false},
+      onClick:function(data,actions){if(!lines().length){var w=document.getElementById('paypal-wrap');var p=w.querySelector('.pay-nudge')||document.createElement('p');p.className='pay-hint pay-nudge';p.textContent='Add a placement above first, then pay here.';w.appendChild(p);return actions.reject();}var n=document.querySelector('.pay-nudge');if(n)n.remove();return actions.resolve();},
       createOrder:function(data,actions){
         var ls=lines();if(!ls.length)return Promise.reject(new Error('empty'));
         var payee=(new URLSearchParams(location.search).get('payee'))||PAYEE_EMAIL;
@@ -759,7 +762,7 @@
           var html='<div class="paid"><b>Paid. You are in.</b><p>'+ls.map(function(l){return l.name+(l.qty>1?' × '+l.qty:'');}).join(' · ')+'</p><p>'+money(total)+' · PayPal transaction '+id+' · receipt sent to '+payer+'</p><p>Next: reply to the receipt or email <a href="mailto:blindtastetest@reservethereserve.com?subject=Sponsor%20'+encodeURIComponent(id)+'">blindtastetest@reservethereserve.com</a> with your logo, the flagship product you are putting in the vault and the names on your passes. Artwork deadline Oct 2.</p></div>';
           if(window.HBTTSold){var mk={};ls.forEach(function(l){mk[l.sku]=l.qty;});window.HBTTSold.mark(mk);}
           window.HBTTCart.clear();window.HBTTCart.paid(html);
-          var w=document.getElementById('paypal-wrap'),pe=document.getElementById('pay-empty');if(w)w.hidden=true;if(pe)pe.hidden=true;
+          var w=document.getElementById('paypal-wrap');if(w)w.hidden=true;
           document.getElementById('cart-count').textContent='paid';
           try{document.getElementById('cart').scrollIntoView({behavior:'smooth'});}catch(e){}
         });
