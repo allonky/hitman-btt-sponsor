@@ -143,6 +143,8 @@
   .sig a{overflow-wrap:anywhere}
   .sig .tag{font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:right;line-height:1.9}
   .paypal-wrap{margin-top:16px}
+  #paypal-buttons{color-scheme:light;background:transparent}
+  #paypal-buttons iframe{color-scheme:light;background:transparent}
   .pay-hint{margin:10px 0 0;font-size:11px;line-height:1.6;color:var(--muted)}
   .pay-empty{margin:16px 0 0;font-size:11px;line-height:1.6;color:var(--muted);border:1px dashed var(--rule);padding:12px 14px}
   .paid{border:2px solid var(--amber);padding:18px 20px;font-size:12px;line-height:1.7;color:var(--body)}
@@ -715,7 +717,7 @@
   function init(){
     if(!window.paypal||!window.HBTTCart)return;
     paypal.Buttons({
-      style:{layout:'vertical',color:'gold',shape:'rect',label:'pay',height:48},
+      style:{layout:'vertical',color:'gold',shape:'rect',label:'pay',height:48,tagline:false},
       createOrder:function(data,actions){
         var ls=lines();if(!ls.length)return Promise.reject(new Error('empty'));
         var payee=(new URLSearchParams(location.search).get('payee'))||PAYEE_EMAIL;
