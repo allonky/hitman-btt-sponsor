@@ -852,9 +852,9 @@
       var price=row.querySelector('.price'),buy=row.querySelector('.buy'),tag=price.querySelector('.soldout'),left=price.querySelector('.left');
       if(allOut){
         if(!tag){tag=document.createElement('span');tag.className='soldout';tag.textContent='Sold out';price.insertBefore(tag,buy);}
-        if(left)left.remove();buy.hidden=true;
+        if(left)left.remove();row.querySelectorAll('.buy,.lvl .add').forEach(function(e){e.hidden=true;});
       }else{
-        if(tag)tag.remove();buy.hidden=false;
+        if(tag)tag.remove();row.querySelectorAll('.buy,.lvl .add').forEach(function(e){e.hidden=false;});
         if(info&&info.max>1&&info.left<info.max){if(!left){left=document.createElement('span');left.className='left';price.insertBefore(left,buy);}left.textContent=info.left+' of '+info.max+' left';}
         else if(left)left.remove();
       }
