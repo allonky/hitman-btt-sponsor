@@ -46,6 +46,8 @@
   .ballot{margin-top:0;border:3px solid var(--amber);padding:22px 26px;display:flex;align-items:center;gap:34px;flex-wrap:wrap}
   .ballot .opt{display:inline-flex;align-items:center;gap:14px;font-family:var(--wm);font-size:40px;letter-spacing:.04em;text-transform:uppercase;line-height:1;color:var(--ink)}
   .ballot .box{width:34px;height:34px;border:4px solid var(--amber);display:inline-block;flex:none}
+  .ballot .box svg{display:block;width:100%;height:100%;fill:none;stroke:var(--amber);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(1.18);transition:opacity .25s}
+  .ballot .box.on svg{opacity:1}
   .ballot .tag{margin-left:auto;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);font-weight:600;max-width:none;white-space:nowrap;text-align:right;line-height:1.6}
   .phone{margin-top:34px;padding-top:26px;border-top:1px solid var(--rule);display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
   .phone b{display:block;font-family:var(--wm);font-weight:400;font-size:20px;letter-spacing:.03em;text-transform:uppercase;color:var(--amber);line-height:1.15}
@@ -295,6 +297,9 @@
     .ballot{margin-top:0;padding:14px 18px;gap:22px}
     .ballot .opt{font-size:28px}
     .ballot .box{width:24px;height:24px;border-width:3px}
+    .ballot .box svg{transition:none}
+    #box-resin svg{opacity:1!important}
+    #box-rosin svg{opacity:0!important}
     .ballot .tag{font-size:9px}
     .phone{margin-top:16px;gap:18px}
     .phone b{font-size:15px}
@@ -390,8 +395,8 @@
 
     <div class="cover-bottom">
       <div class="ballot" aria-label="The call every judge makes">
-        <span class="opt"><i class="box" aria-hidden="true"></i>Live resin</span>
-        <span class="opt"><i class="box" aria-hidden="true"></i>Live rosin</span>
+        <span class="opt"><i class="box on" id="box-resin" aria-hidden="true"><svg viewBox="0 0 34 34" aria-hidden="true"><path d="M6 5.5 C 12 12, 20 21, 28.5 28.5"/><path d="M28 6 C 21 12, 13 20.5, 5.5 28"/></svg></i>Live resin</span>
+        <span class="opt"><i class="box" id="box-rosin" aria-hidden="true"><svg viewBox="0 0 34 34" aria-hidden="true"><path d="M6 5.5 C 12 12, 20 21, 28.5 28.5"/><path d="M28 6 C 21 12, 13 20.5, 5.5 28"/></svg></i>Live rosin</span>
         <span class="tag">One vote per dab.<br>20-30 blindfolded dabs.<br>Nobody has passed the test.</span>
       </div>
       <div class="pitch">
@@ -765,6 +770,9 @@
   window.HBTTCart={items:function(){return items;},clear:function(){items={};save();render();},paid:function(html){document.getElementById('cart-lines').innerHTML=html;},prune:function(f){var ch=false;Object.keys(items).forEach(function(k){var q=f(k,items[k].qty);if(q!==items[k].qty){ch=true;if(q<=0)delete items[k];else items[k].qty=q;}});if(ch){save();render();}},changed:[]};
   load();render();
 })();
+</script>
+<script>
+(function(){var a=document.getElementById('box-resin'),b=document.getElementById('box-rosin');if(!a||!b)return;if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;var on=true;setInterval(function(){on=!on;a.classList.toggle('on',on);b.classList.toggle('on',!on);},2500);})();
 </script>
 
 <script>
