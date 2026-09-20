@@ -157,6 +157,18 @@
   .pay-hint{margin:10px 0 0;font-size:11px;line-height:1.6;color:var(--muted)}
   .paypal-wrap .pay-hint{color:#5a5040}
   .paypal-wrap .pay-hint a{color:#1c1712}
+  .buyer{margin-top:22px;padding-top:18px;border-top:1px solid var(--rule)}
+  .buyer-head{margin:0 0 12px;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+  .buyer .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .buyer label{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .buyer label small{text-transform:none;letter-spacing:0;color:var(--muted)}
+  .buyer input{display:block;width:100%;margin-top:6px;font-family:var(--mono);font-size:14px;color:var(--ink);background:#221c15;border:1px solid var(--rule);padding:11px 12px;min-height:44px}
+  .buyer input:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
+  .buyer input.bad{border-color:#e26944}
+  .buyer-err{margin:0 0 8px;font-size:11px;color:#e26944;font-weight:600}
+  @media (max-width:600px){.buyer .f2{grid-template-columns:1fr}}
+  @media print{
+    .paypal-wrap,.pay-empty{display:none}.buyer{display:none}}
   .paypal-wrap.idle #paypal-buttons{opacity:.55}
   .pay-nudge{color:#b93c17!important;font-weight:600}
   .pay-empty{margin:16px 0 0;font-size:11px;line-height:1.6;color:var(--muted);border:1px dashed var(--rule);padding:12px 14px}
@@ -256,7 +268,6 @@
     html{scroll-behavior:auto}
   }
   @media print{
-    .paypal-wrap,.pay-empty{display:none}
     html{color-scheme:dark;scroll-behavior:auto}
     body{background:var(--bg);font-size:10pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .page{padding:0;max-width:none}
@@ -693,6 +704,13 @@
       <div class="cart-lines" id="cart-lines"><p class="empty">Nothing in it yet. Add placements above, then check out. Everything is paid in full at checkout through PayPal.</p></div>
       <div class="cart-foot">
         <div class="total"><span>Total</span><b id="cart-total" aria-live="polite">$0</b></div>
+        <form class="buyer" id="buyer" autocomplete="on" novalidate>
+          <p class="buyer-head">Who is sponsoring</p>
+          <div class="f2"><label>Company or brand<input type="text" name="company" required autocomplete="organization"></label><label>Contact name<input type="text" name="name" required autocomplete="name"></label></div>
+          <div class="f2"><label>Email<input type="email" name="email" required autocomplete="email" inputmode="email"></label><label>Phone<input type="tel" name="phone" required autocomplete="tel" inputmode="tel"></label></div>
+          <div class="f2"><label>Instagram <small>optional</small><input type="text" name="instagram" autocomplete="off" placeholder="@"></label><label>Anything we should know <small>optional</small><input type="text" name="notes" autocomplete="off"></label></div>
+          <p class="buyer-err" id="buyer-err" hidden>Fill in company, contact, email and phone before you pay.</p>
+        </form>
         <div class="paypal-wrap" id="paypal-wrap"><div id="paypal-buttons"></div><p class="pay-hint">Pay with PayPal or any card. No PayPal account needed. Paid in full, no deposits.</p></div>
         <p class="pay-empty" id="pay-empty" hidden></p>
       </div>
@@ -749,23 +767,30 @@
 (function(){
   var CLIENT_ID='Afzj1FDsLWV0woGXOa-FPqb-6cA4GV8Ip-HD490wLptjo1HSQFfpewrzHij4ybZuxu_Ck-ynQPbC8On_';
   var PAYEE_EMAIL='';
+  var ORDER_API='https://hitman-btt-inventory.vercel.app/api/order';
   var s=document.createElement('script');
   s.src='https://www.paypal.com/sdk/js?client-id='+encodeURIComponent(CLIENT_ID)+'&currency=USD&intent=capture&disable-funding=paylater,venmo&enable-funding=card';
   s.onload=init;s.onerror=function(){var w=document.getElementById('paypal-wrap');if(w)w.innerHTML='<p class="pay-hint">PayPal did not load. Email <a href="mailto:blindtastetest@reservethereserve.com">blindtastetest@reservethereserve.com</a> and we will send a PayPal invoice.</p>';};
   document.head.appendChild(s);
   function money(n){return '$'+n.toLocaleString('en-US');}
+  var FK='hbtt-sponsor-buyer';
+  function buyer(){var f=document.getElementById('buyer'),o={};if(!f)return o;['company','name','email','phone','instagram','notes'].forEach(function(k){o[k]=(f.elements[k].value||'').trim();});return o;}
+  function buyerOk(){var b=buyer(),f=document.getElementById('buyer'),ok=true;['company','name','email','phone'].forEach(function(k){var bad=!b[k]||(k==='email'&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(b[k]))||(k==='phone'&&b[k].replace(/\D/g,'').length<10);f.elements[k].classList.toggle('bad',bad);if(bad)ok=false;});document.getElementById('buyer-err').hidden=ok;if(!ok){try{f.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}}return ok;}
+  (function(){var f=document.getElementById('buyer');if(!f)return;try{var v=JSON.parse(localStorage.getItem(FK)||'{}');Object.keys(v).forEach(function(k){if(f.elements[k])f.elements[k].value=v[k];});}catch(e){}f.addEventListener('input',function(){try{localStorage.setItem(FK,JSON.stringify(buyer()));}catch(e){}});f.addEventListener('submit',function(e){e.preventDefault();});})();
   function lines(){var it=window.HBTTCart.items();return Object.keys(it).map(function(k){return {sku:k,name:it[k].name,price:it[k].price,qty:it[k].qty};});}
   function init(){
     if(!window.paypal||!window.HBTTCart)return;
     paypal.Buttons({
       style:{layout:'vertical',color:'gold',shape:'rect',label:'pay',height:48,tagline:false},
-      onClick:function(data,actions){if(!lines().length){var w=document.getElementById('paypal-wrap');var p=w.querySelector('.pay-nudge')||document.createElement('p');p.className='pay-hint pay-nudge';p.textContent='Add a placement above first, then pay here.';w.appendChild(p);return actions.reject();}var n=document.querySelector('.pay-nudge');if(n)n.remove();return actions.resolve();},
+      onClick:function(data,actions){if(lines().length&&!buyerOk())return actions.reject();if(!lines().length){var w=document.getElementById('paypal-wrap');var p=w.querySelector('.pay-nudge')||document.createElement('p');p.className='pay-hint pay-nudge';p.textContent='Add a placement above first, then pay here.';w.appendChild(p);return actions.reject();}var n=document.querySelector('.pay-nudge');if(n)n.remove();return actions.resolve();},
       createOrder:function(data,actions){
         var ls=lines();if(!ls.length)return Promise.reject(new Error('empty'));
         var payee=(new URLSearchParams(location.search).get('payee'))||PAYEE_EMAIL;
+        var b=buyer();var nm=b.name.split(/\s+/);var payer={email_address:b.email,name:{given_name:nm[0]||b.name,surname:nm.slice(1).join(' ')||''}};var digits=b.phone.replace(/\D/g,'');if(digits.length>=10)payer.phone={phone_number:{national_number:digits.slice(-10)}};
         var total=ls.reduce(function(a,l){return a+l.price*l.qty;},0);
         return actions.order.create({
           intent:'CAPTURE',
+          payer:payer,
           application_context:{shipping_preference:'NO_SHIPPING',brand_name:'Hitman Blind Taste Test Colorado',user_action:'PAY_NOW'},
           purchase_units:[Object.assign(payee?{payee:{email_address:payee}}:{},{
             description:'Hitman Blind Taste Test Colorado sponsorship, Oct 9 to 11, 2026',
@@ -784,6 +809,7 @@
           var id=(cap&&cap.id)||d.id;
           var html='<div class="paid"><b>Paid. You are in.</b><p>'+ls.map(function(l){return l.name+(l.qty>1?' × '+l.qty:'');}).join(' · ')+'</p><p>'+money(total)+' · PayPal transaction '+id+' · receipt sent to '+payer+'</p><p>Next: reply to the receipt or email <a href="mailto:blindtastetest@reservethereserve.com?subject=Sponsor%20'+encodeURIComponent(id)+'">blindtastetest@reservethereserve.com</a> with your logo, the flagship product you are putting in the vault and the names on your passes. Artwork deadline Oct 2.</p></div>';
           if(window.HBTTSold){var mk={};ls.forEach(function(l){mk[l.sku]=l.qty;});window.HBTTSold.mark(mk);}
+          try{var bb=buyer();var ln={};ls.forEach(function(l){ln[l.sku]=l.qty;});fetch(ORDER_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({captureId:id,paypalOrderId:d.id,company:bb.company,name:bb.name,email:bb.email,phone:bb.phone,instagram:bb.instagram,notes:bb.notes,lines:ln,total:total.toFixed(2),payerEmail:(d.payer&&d.payer.email_address)||''}),keepalive:true}).catch(function(){});}catch(e){}
           window.HBTTCart.clear();window.HBTTCart.paid(html);
           var w=document.getElementById('paypal-wrap');if(w)w.hidden=true;
           document.getElementById('cart-count').textContent='paid';
