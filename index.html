@@ -688,6 +688,27 @@
       </div>
     </section>
 
+    <section class="cart" id="cart" aria-labelledby="cart-title">
+      <div class="cart-head">
+        <h2 id="cart-title">Your cart <span id="cart-count" aria-live="polite">empty</span></h2>
+        <p class="cart-rule">Paid in full through PayPal.<br>A selection is not a hold.</p>
+      </div>
+      <div class="cart-lines" id="cart-lines"><p class="empty">Nothing in it yet. Add placements above, then check out. Everything is paid in full at checkout through PayPal.</p></div>
+      <div class="cart-foot">
+        <div class="total"><span>Total</span><b id="cart-total" aria-live="polite">$0</b></div>
+        <form class="buyer" id="buyer" autocomplete="on" novalidate>
+          <p class="buyer-head">Who is sponsoring</p>
+          <div class="f2"><label>Company or brand<input type="text" name="company" required autocomplete="organization"></label><label>Contact name<input type="text" name="name" required autocomplete="name"></label></div>
+          <div class="f2"><label>Email<input type="email" name="email" required autocomplete="email" inputmode="email"></label><label>Phone<input type="tel" name="phone" required autocomplete="tel" inputmode="tel"></label></div>
+          <div class="f2"><label>Instagram <small>optional</small><input type="text" name="instagram" autocomplete="off" placeholder="@"></label><label>Anything we should know <small>optional</small><input type="text" name="notes" autocomplete="off"></label></div>
+          <p class="buyer-err" id="buyer-err" hidden>Fill in company, contact, email and phone before you pay.</p>
+        </form>
+        <div class="paypal-wrap" id="paypal-wrap"><div id="paypal-buttons"></div><p class="pay-hint">Pay with PayPal or any card. No PayPal account needed. Paid in full, no deposits.</p></div>
+        <p class="pay-empty" id="pay-empty" hidden></p>
+      </div>
+      <p class="cart-note">Vault product, artwork and passes get sorted by email after you pay. Questions before you do: <a href="mailto:blindtastetest@reservethereserve.com">blindtastetest@reservethereserve.com</a></p>
+    </section>
+
     <section class="fine" aria-labelledby="terms-title">
       <h2 id="terms-title">Terms. Read these.</h2>
       <div class="cols">
@@ -710,27 +731,6 @@
           <p class="keep"><b>The room.</b> Private. 21+. Presale only. Nothing sold at the door. Entries are from legal Colorado market brands and are pennied out from a licensed dispensary for the test specifically. No cannabis products are sold at this event and buying a ticket to take the test does not give you any kind of cannabis product whatsoever. If you win the test, you win ancillary prizes.</p>
         </div>
       </div>
-    </section>
-
-    <section class="cart" id="cart" aria-labelledby="cart-title">
-      <div class="cart-head">
-        <h2 id="cart-title">Your cart <span id="cart-count" aria-live="polite">empty</span></h2>
-        <p class="cart-rule">Paid in full through PayPal.<br>A selection is not a hold.</p>
-      </div>
-      <div class="cart-lines" id="cart-lines"><p class="empty">Nothing in it yet. Add placements above, then check out. Everything is paid in full at checkout through PayPal.</p></div>
-      <div class="cart-foot">
-        <div class="total"><span>Total</span><b id="cart-total" aria-live="polite">$0</b></div>
-        <form class="buyer" id="buyer" autocomplete="on" novalidate>
-          <p class="buyer-head">Who is sponsoring</p>
-          <div class="f2"><label>Company or brand<input type="text" name="company" required autocomplete="organization"></label><label>Contact name<input type="text" name="name" required autocomplete="name"></label></div>
-          <div class="f2"><label>Email<input type="email" name="email" required autocomplete="email" inputmode="email"></label><label>Phone<input type="tel" name="phone" required autocomplete="tel" inputmode="tel"></label></div>
-          <div class="f2"><label>Instagram <small>optional</small><input type="text" name="instagram" autocomplete="off" placeholder="@"></label><label>Anything we should know <small>optional</small><input type="text" name="notes" autocomplete="off"></label></div>
-          <p class="buyer-err" id="buyer-err" hidden>Fill in company, contact, email and phone before you pay.</p>
-        </form>
-        <div class="paypal-wrap" id="paypal-wrap"><div id="paypal-buttons"></div><p class="pay-hint">Pay with PayPal or any card. No PayPal account needed. Paid in full, no deposits.</p></div>
-        <p class="pay-empty" id="pay-empty" hidden></p>
-      </div>
-      <p class="cart-note">Vault product, artwork and passes get sorted by email after you pay. Questions before you do: <a href="mailto:blindtastetest@reservethereserve.com">blindtastetest@reservethereserve.com</a></p>
     </section>
 
     <footer class="sig">
